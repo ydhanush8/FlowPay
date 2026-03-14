@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String      @id // Clerk User ID
+  email              String      @unique
+  name               String?
+  plan               Plan        @default(FREE)
+  subscriptionStatus String?     // active, trialling, past_due, etc.
+  razorpaySubscriptionId String? @unique
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  sentAgreements     Agreement[] @relation("PayerAgreements")
+  receivedAgreements Agreement[] @relation("ReceiverAgreements")
+  invitationsSent    Invitation[] @relation("SenderInvitations")
+}
+
+enum Plan {
+  FREE
+  PRO
+}
+
+model Agreement {
+  id               String    @id @default(uuid())
+  title            String
+  description      String?
+  amount           Float
+  frequency        Frequency
+  startDate        DateTime
+  endDate          DateTime?
+  rules            String?
+  paymentLink      String?   // New: External link where payer is redirected
+  status           AgreementStatus @default(PENDING)
+  payerId          String
+  receiverId       String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  payer            User      @relation("PayerAgreements", fields: [payerId], references: [id])
+  receiver         User?     @relation("ReceiverAgreements", fields: [receiverId], references: [id])
+  payments         Payment[]
+  invitation       Invitation?
+}
+
+enum Frequency {
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+  CUSTOM
+}
+
+enum AgreementStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+model Payment {
+  id            String      @id @default(uuid())
+  agreementId   String
+  amount        Float
+  dueDate       DateTime
+  status        PaymentStatus @default(PENDING)
+  transactionRef String?    // Generic reference for external payment
+  paidAt        DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  agreement     Agreement   @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  LATE
+  FAILED
+}
+
+model Invitation {
+  id          String           @id @default(uuid())
+  agreementId String           @unique
+  senderId    String
+  receiverEmail String
+  token       String           @unique @default(uuid())
+  status      InvitationStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  agreement   Agreement        @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+  sender      User             @relation("SenderInvitations", fields: [senderId], references: [id])
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
