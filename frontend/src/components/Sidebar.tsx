@@ -136,7 +136,7 @@ export const Sidebar = () => {
 
       <div className="px-6 py-4 flex items-center justify-between" style={{ borderTop: '1px solid var(--border-color)' }}>
          <div className="flex items-center space-x-3">
-           <UserButton afterSignOutUrl="/" />
+           <UserButton />
            <div className="flex flex-col">
              <span className="text-xs font-bold uppercase tracking-tight" style={{ color: 'var(--fg)' }}>Account</span>
              <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--muted)' }}>{plan}</span>
