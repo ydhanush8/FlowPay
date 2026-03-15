@@ -8,7 +8,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8 text-center space-y-12" style={{ background: 'var(--bg)', color: 'var(--fg)' }}>
       <div className="space-y-6">
-        <h1 className="text-7xl font-bold tracking-tighter sm:text-8xl" style={{ color: 'var(--fg)' }}>Agreement UI</h1>
+        <h1 className="text-7xl font-bold tracking-tighter sm:text-8xl uppercase italic" style={{ color: 'var(--fg)' }}>FlowPay</h1>
         <p className="text-xl max-w-2xl mx-auto leading-relaxed font-light" style={{ color: 'var(--muted)' }}>
           Redefining how parties establish and resolve obligations. Secure, automated, and minimal.
         </p>
